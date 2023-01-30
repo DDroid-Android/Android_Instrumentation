@@ -8,7 +8,7 @@ In our work, DDroid-instrumentor is used to instrument the apps from [Themis](ht
 
 Fig. 1 shows DDroid-instrumentor's workflow.
 
-![Fig 1](https://github.com/DDroid-Android/Android_Instrumentation/blob/main/Fig.png)
+![Fig 1](https://github.com/DDroid-Android/Android_Instrumentation/blob/main/Fig1.png)
 
 ### Step (1): Instrumentation 
 Given an app, we automatically instrument event handler  methods to obtain an instrumented app. Specifically, we get the ``.class`` files through Gradle Transformer and our custom Gradle plugin, and use ASM to traverse all the ``.class`` files. If the event handler method is traversed, our custom function will scan the parameter list of the current event handler method, and insert specific API-call statements into the current event handler method according to the type of the UI component bounded to the event handler to get __``UI-Infos``__ of the event handler method. For example, ``onClick (View v)`` is a typical event handler method, and the UI component type in its parameter list is __android.view.View__. Then we instrument at the beginning of the ``onClick`` method body to log the id, className and location of the View component, as well as the global qualified name of its corresponding event handler method.
