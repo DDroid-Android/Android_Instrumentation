@@ -1,16 +1,12 @@
 package com.example.asm.plugin;
 
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.TypePath;
 
 public class Utils implements Opcodes {
 
@@ -93,19 +89,15 @@ public class Utils implements Opcodes {
             methodVisitor.visitEnd();
         }
         {
-            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "init", "(Landroid/content/Context;)V", null, null);
+            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "init", "()V", null, null);
             methodVisitor.visitCode();
-            methodVisitor.visitVarInsn(ALOAD, 0);
-            methodVisitor.visitVarInsn(ALOAD, 1);
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "android/content/Context", "getApplicationContext", "()Landroid/content/Context;", false);
-            methodVisitor.visitFieldInsn(PUTFIELD, "realtimecoverage/CrashHandler", "mContext", "Landroid/content/Context;");
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "getDefaultUncaughtExceptionHandler", "()Ljava/lang/Thread$UncaughtExceptionHandler;", false);
             methodVisitor.visitFieldInsn(PUTFIELD, "realtimecoverage/CrashHandler", "mDefaultHandler", "Ljava/lang/Thread$UncaughtExceptionHandler;");
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "setDefaultUncaughtExceptionHandler", "(Ljava/lang/Thread$UncaughtExceptionHandler;)V", false);
             methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(2, 2);
+            methodVisitor.visitMaxs(2, 1);
             methodVisitor.visitEnd();
         }
         {

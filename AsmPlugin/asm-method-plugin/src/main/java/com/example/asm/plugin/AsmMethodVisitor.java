@@ -38,6 +38,10 @@ public class AsmMethodVisitor extends MethodVisitor {
         add("onPreferenceClick");
         add("afterTextChanged");
         add("onSharedPreferenceChanged");
+        add("onEditorAction");
+
+        add("onSupportNavigateUp");
+        add("onBackPressed");
     }};
     private Set<String> lifecycleSet = new HashSet() {{
         add("onCreate");
@@ -196,6 +200,14 @@ public class AsmMethodVisitor extends MethodVisitor {
                     mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/afollestad/materialdialogs/DialogAction", "name", "()Ljava/lang/String;", false);
                     mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
                 }
+                else if(parameters[i].equals("Landroid/widget/TextView") && methodName.equals("onEditorAction")) {
+                    mv.visitVarInsn(Opcodes.ALOAD, i+1);
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/widget/TextView", "getText", "()Ljava/lang/CharSequence;", false);
+                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
+                    mv.visitVarInsn(Opcodes.ILOAD, i+2);
+                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
+                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                }
             }
             mv.visitLdcInsn(className);
             mv.visitLdcInsn(methodName);
@@ -211,10 +223,7 @@ public class AsmMethodVisitor extends MethodVisitor {
         if(flag == 2 && methodName.equals("onCreate") && opcode == Opcodes.INVOKESPECIAL && name.equals("onCreate") && descriptor.equals("(Landroid/os/Bundle;)V") && !isInterface) {
             System.out.println("Initializing crash handler...");
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/CrashHandler", "getInstance", "()Lrealtimecoverage/CrashHandler;", false);
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, className, "getApplicationContext", "()Landroid/content/Context;", false);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "realtimecoverage/CrashHandler", "init", "(Landroid/content/Context;)V", false);
-
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "realtimecoverage/CrashHandler", "init", "()V", false);
         }
 
         // recycler view
