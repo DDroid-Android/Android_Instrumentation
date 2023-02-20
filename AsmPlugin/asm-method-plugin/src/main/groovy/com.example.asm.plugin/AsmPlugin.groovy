@@ -65,12 +65,17 @@ class AsmPlugin extends Transform implements Plugin<Project> {
         TransformOutputProvider outputProvider = transformInvocation.outputProvider
         if (outputProvider != null)
             outputProvider.deleteAll()
+        def count = 1
         inputs.each { TransformInput input ->
             // directoryInputs
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 def preClassNamePath = directoryInput.file.absolutePath
-                createNewClass(preClassNamePath)
+                if(count == 1) {
+                    System.out.println(preClassNamePath)
+                    createNewClass(preClassNamePath)
+                }
                 handleDirectoryInput(directoryInput, outputProvider)
+                count++
             }
 
             // jarInputs

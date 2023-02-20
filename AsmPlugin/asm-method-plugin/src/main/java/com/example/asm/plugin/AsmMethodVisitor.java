@@ -77,7 +77,10 @@ public class AsmMethodVisitor extends MethodVisitor {
         // if this method is "onCreate" of Main Activity
         if(flag == 2 && methodName.equals("onCreate") && className.startsWith(packageName)) {
             System.out.println("Initializing Blocking Queue...");
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/RealtimeCoverage", "init", "()V", false);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, className, "getFilesDir", "()Ljava/io/File;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/RealtimeCoverage", "init", "(Ljava/lang/String;)V", false);
         }
 
         // if this method is a lifecycle method of an Activity
@@ -119,13 +122,24 @@ public class AsmMethodVisitor extends MethodVisitor {
                     mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
                 }
                 else if(parameters[i].equals("Landroid/view/MenuItem")) {
-                    mv.visitVarInsn(Opcodes.ALOAD, i+1);
-                    mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getItemId", "()I", true);
-                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
-                    mv.visitVarInsn(Opcodes.ALOAD, i+1);
-                    mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getTitle", "()Ljava/lang/CharSequence;", true);
-                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
-                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                    if(methodName.equals("onActionItemClicked")) {
+                        mv.visitVarInsn(Opcodes.ALOAD, 2);
+                        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getItemId", "()I", true);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
+                        mv.visitVarInsn(Opcodes.ALOAD, 2);
+                        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getTitle", "()Ljava/lang/CharSequence;", true);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                    }
+                    else {
+                        mv.visitVarInsn(Opcodes.ALOAD, 1);
+                        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getItemId", "()I", true);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
+                        mv.visitVarInsn(Opcodes.ALOAD, 1);
+                        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "android/view/MenuItem", "getTitle", "()Ljava/lang/CharSequence;", true);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                    }
                 }
                 else if(parameters[i].equals("Landroid/view/View")) {
                     mv.visitInsn(Opcodes.ICONST_2);
@@ -223,7 +237,10 @@ public class AsmMethodVisitor extends MethodVisitor {
         if(flag == 2 && methodName.equals("onCreate") && opcode == Opcodes.INVOKESPECIAL && name.equals("onCreate") && descriptor.equals("(Landroid/os/Bundle;)V") && !isInterface) {
             System.out.println("Initializing crash handler...");
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/CrashHandler", "getInstance", "()Lrealtimecoverage/CrashHandler;", false);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "realtimecoverage/CrashHandler", "init", "()V", false);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, className, "getFilesDir", "()Ljava/io/File;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "realtimecoverage/CrashHandler", "init", "(Ljava/lang/String;)V", false);
         }
 
         // recycler view
@@ -237,19 +254,22 @@ public class AsmMethodVisitor extends MethodVisitor {
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/view/View", "getTag", "()Ljava/lang/Object;", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                mv.visitLdcInsn(className);
+                mv.visitLdcInsn(methodName);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
             }
             else if(name.equals("getId") && descriptor.equals("()I")) {
                 System.out.println("Instrumenting：" + className + "/" + methodName + ", desc:" + desc);
                 insertTime();
-                mv.visitLdcInsn("");
+                mv.visitLdcInsn("viewId");
                 mv.visitVarInsn(Opcodes.ALOAD, 1);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/view/View", "getId", "()I", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                mv.visitLdcInsn(className);
+                mv.visitLdcInsn(methodName);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
             }
-            mv.visitLdcInsn(className);
-            mv.visitLdcInsn(methodName);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "realtimecoverage/MethodVisitor", "visit", "(Ljava/lang/String;Ljava/lang/String;)V", false);
         }
     }
 

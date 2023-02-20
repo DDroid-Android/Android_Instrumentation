@@ -15,7 +15,7 @@ import java.util.HashSet;
 public class AsmClassVisitor extends ClassVisitor implements Opcodes {
 
     private String mClassName;
-    private String mainActivity;
+    private Set<String> mainActivitys = new HashSet<>();
     private String packageName;
     private String xmlPath;
 
@@ -43,13 +43,14 @@ public class AsmClassVisitor extends ClassVisitor implements Opcodes {
          * flag = 2 this class is Main Activity
          **/
         int flag = 0;
-        if (mClassName.endsWith(mainActivity)) {
-            flag = 2;
-        } else {
-            for (String str : s) {
-                if (mClassName.endsWith(str)) {
-                    flag = 1;
-                }
+        for(String mainActivity : mainActivitys) {
+            if (mClassName.endsWith(mainActivity)) {
+                flag = 2;
+            }
+        }
+        for (String str : s) {
+            if (mClassName.endsWith(str) && flag != 2) {
+                flag = 1;
             }
         }
         return new AsmMethodVisitor(mv, mClassName, name, desc, flag, signature, packageName);
@@ -84,7 +85,7 @@ public class AsmClassVisitor extends ClassVisitor implements Opcodes {
                         flag = false;
                     }
                     if (line.indexOf("<action android:name=\"android.intent.action.MAIN\" />") != -1) {
-                        this.mainActivity = activityName;
+                        this.mainActivitys.add(activityName);
                     }
                     if (line.contains("package")) {
                         packageName = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\"")).replace('.', '/');

@@ -1,11 +1,21 @@
 package com.gavin.asmdemo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
 
 public class MainActivity extends BaseActivity {
 
@@ -20,8 +30,4 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
-//    public void onEditorAction(TextView v, int actionId, KeyEvent event) {
-//        realtimecoverage.String.valueOf(v.getText());
-//        String.valueOf(actionId);
-//    }
 }
